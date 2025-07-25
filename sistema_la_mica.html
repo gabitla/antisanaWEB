@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EPMAPS G5 - Sistema La Mica Quito Sur</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Arial", sans-serif;
+      background: linear-gradient(135deg, #2c5282 0%, #2d3748 100%);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 380px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+      border-right: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #2c5282;
+    }
+
+    .header h1 {
+      color: #2c5282;
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 12px;
+    }
+
+    .system-info {
+      background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #38b2ac;
+    }
+
+    .system-info h2 {
+      color: #2c5282;
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .system-info p {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+
+    .route-controls {
+      background: rgba(44, 82, 130, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .route-controls h3 {
+      color: #2c5282;
+      margin-bottom: 10px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .route-step {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      margin: 5px 0;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+
+    .route-step:hover {
+      border-left-color: #38b2ac;
+      transform: translateX(3px);
+    }
+
+    .route-step.active {
+      border-left-color: #2c5282;
+      background: #e6fffa;
+    }
+
+    .route-step .icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .route-step .details {
+      flex: 1;
+    }
+
+    .route-step .name {
+      font-weight: bold;
+      font-size: 12px;
+      color: #2c5282;
+    }
+
+    .route-step .description {
+      font-size: 10px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .controls {
+      margin-bottom: 25px;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+      font-size: 13px;
+    }
+
+    .control-group select,
+    .control-group input {
+      width: 100%;
+      padding: 8px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: border-color 0.3s;
+    }
+
+    .control-group select:focus,
+    .control-group input:focus {
+      outline: none;
+      border-color: #2c5282;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(45deg, #2c5282, #2d3748);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(44, 82, 130, 0.4);
+    }
+
+    .btn-route {
+      background: linear-gradient(45deg, #38b2ac, #319795);
+    }
+
+    .btn-route:hover {
+      box-shadow: 0 4px 12px rgba(56, 178, 172, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(45deg, #38a169, #2f855a);
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 4px 12px rgba(56, 161, 105, 0.4);
+    }
+
+    .station-list {
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #f9f9f9;
+    }
+
+    .station-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-size: 13px;
+    }
+
+    .station-item:hover {
+      background-color: #e8f4f8;
+    }
+
+    .station-item.active {
+      background-color: #bee3f8;
+      border-left: 4px solid #2c5282;
+    }
+
+    .station-item .name {
+      font-weight: bold;
+      color: #2c5282;
+    }
+
+    .station-item .details {
+      font-size: 11px;
+      color: #666;
+      margin-top: 3px;
+    }
+
+    .stats-panel {
+      background: rgba(44, 82, 130, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .stats-panel h3 {
+      color: #2c5282;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .stats-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .stats-item .label {
+      color: #666;
+    }
+
+    .stats-item .value {
+      font-weight: bold;
+      color: #2c5282;
+    }
+
+    #map {
+      flex: 1;
+      height: 100vh;
+      border-radius: 0 20px 20px 0;
+      box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-popup {
+      font-family: Arial, sans-serif;
+      max-width: 300px;
+    }
+
+    .custom-popup h3 {
+      color: #2c5282;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #bee3f8;
+      padding-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .custom-popup .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin: 10px 0;
+    }
+
+    .custom-popup .info-item {
+      background: #f7fafc;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .custom-popup .info-item .label {
+      font-weight: bold;
+      color: #4a5568;
+    }
+
+    .custom-popup .info-item .value {
+      color: #2c5282;
+      font-weight: bold;
+    }
+
+    .custom-popup .coordinates {
+      font-size: 11px;
+      color: #999;
+      margin-top: 10px;
+      text-align: center;
+      border-top: 1px solid #eee;
+      padding-top: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .status-active {
+      background-color: #48bb78;
+    }
+
+    .status-inactive {
+      background-color: #f56565;
+    }
+
+    .status-maintenance {
+      background-color: #ed8936;
+    }
+
+    .coverage-info {
+      background: linear-gradient(135deg, #fef5e7 0%, #fed7aa 100%);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #f6ad55;
+    }
+
+    .coverage-info h3 {
+      color: #c05621;
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .coverage-info p {
+      font-size: 12px;
+      color: #744210;
+      margin-bottom: 5px;
+    }
+
+    .conduction-line {
+      stroke-dasharray: 20, 10;
+      animation: dash 3s linear infinite;
+    }
+
+    @keyframes dash {
+      0% {
+        stroke-dashoffset: 0;
+      }
+
+      100% {
+        stroke-dashoffset: 30;
+      }
+    }
+
+    .route-point-icon {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 0.1;
+      }
+
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 300px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      #map {
+        flex: 1;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="header">
+        <h1>EPMAPS G5</h1>
+        <p>Sistema de Monitoreo Hidrológico y Meteorológico</p>
+      </div>
+
+      <div class="system-info">
+        <h2>🏔️ Sistema La Mica - Quito Sur</h2>
+        <p>
+          Sistema ubicado en las provincias de Napo y Pichincha, específicamente en el Distrito Metropolitano de Quito
+          (DMQ). Inicia en las fuentes de abastecimiento y termina en la planta de tratamiento El Troje.
+        </p>
+        <p>
+          <strong>Componentes:</strong> Conducción superior (La Mica → El Carmen) y conducción inferior (El Carmen → El
+          Troje).
+        </p>
+      </div>
+
+      <div class="coverage-info">
+        <h3>🏘️ Cobertura del Sistema</h3>
+        <p><strong>Área directa:</strong> 4,000 Ha desde Av. Morán Valverde hasta el límite cantonal sur</p>
+        <p><strong>Beneficio indirecto:</strong> Otros sectores de la ciudad de Quito</p>
+        <p><strong>Población atendida:</strong> Zona sur del Distrito Metropolitano</p>
+      </div>
+
+      <div class="route-controls">
+        <h3>🌊 Recorrido del Agua</h3>
+        <div class="route-step" onclick="focusRoutePoint('embalse')">
+          <div class="icon" style="background: #4299e1;">1</div>
+          <div class="details">
+            <div class="name">Embalse La Mica</div>
+            <div class="description">Fuente de abastecimiento principal</div>
+          </div>
+        </div>
+        <div class="route-step" onclick="focusRoutePoint('superior')">
+          <div class="icon" style="background: #38b2ac;">2</div>
+          <div class="details">
+            <div class="name">Conducción Superior</div>
+            <div class="description">Desde La Mica hasta El Carmen</div>
+          </div>
+        </div>
+        <div class="route-step" onclick="focusRoutePoint('carmen')">
+          <div class="icon" style="background: #ed8936;">3</div>
+          <div class="details">
+            <div class="name">Central El Carmen</div>
+            <div class="description">Planta generadora de energía</div>
+          </div>
+        </div>
+        <div class="route-step" onclick="focusRoutePoint('inferior')">
+          <div class="icon" style="background: #38b2ac;">4</div>
+          <div class="details">
+            <div class="name">Conducción Inferior</div>
+            <div class="description">Desde El Carmen hasta El Troje</div>
+          </div>
+        </div>
+        <div class="route-step" onclick="focusRoutePoint('troje')">
+          <div class="icon" style="background: #48bb78;">5</div>
+          <div class="details">
+            <div class="name">Planta El Troje</div>
+            <div class="description">Tratamiento final del agua</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-route" onclick="animateWaterFlow()">
+        🌊 Mostrar Flujo de Agua
+      </button>
+
+      <button class="btn btn-secondary" onclick="showCoverageArea()">
+        📍 Mostrar Área de Cobertura
+      </button>
+
+      <div class="controls">
+        <div class="control-group">
+          <label for="sistemFilter">Sistema:</label>
+          <select id="sistemFilter">
+            <option value="">Todos los sistemas</option>
+            <option value="Alcantarillado">Alcantarillado</option>
+            <option value="Centro Occidente">Centro Occidente</option>
+            <option value="Mica Quito Sur" selected>Mica Quito Sur</option>
+            <option value="Noroccidente">Noroccidente</option>
+            <option value="Papallacta">Papallacta</option>
+            <option value="Pita - Puengasí">Pita - Puengasí</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="variableFilter">Variable:</label>
+          <select id="variableFilter">
+            <option value="">Todas las variables</option>
+            <option value="Precipitación">Precipitación</option>
+            <option value="Temperatura">Temperatura</option>
+            <option value="Caudal">Caudal</option>
+            <option value="Nivel">Nivel de agua</option>
+            <option value="Calidad">Calidad del agua</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="loadStationsData()">
+          🔄 Cargar Estaciones
+        </button>
+
+        <button class="btn btn-secondary" onclick="exportData()">
+          📊 Exportar Datos
+        </button>
+      </div>
+
+      <div class="control-group">
+        <label>Estaciones Disponibles:</label>
+        <div id="stationsList" class="station-list">
+          <div class="loading">Cargando estaciones...</div>
+        </div>
+      </div>
+
+      <div class="stats-panel">
+        <h3>📈 Estadísticas del Sistema</h3>
+        <div class="stats-item">
+          <span class="label">Estaciones activas:</span>
+          <span class="value" id="activeStations">0</span>
+        </div>
+        <div class="stats-item">
+          <span class="label">Última actualización:</span>
+          <span class="value" id="lastUpdate">--:--</span>
+        </div>
+        <div class="stats-item">
+          <span class="label">Sistemas monitoreados:</span>
+          <span class="value" id="systemCount">0</span>
+        </div>
+        <div class="stats-item">
+          <span class="label">Variables medidas:</span>
+          <span class="value" id="variableCount">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="map"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script>
+    // Inicializar el mapa centrado en la región de Quito
+    const map = L.map("map").setView([-0.2500, -78.4000], 11);
+
+    // Capas de mapa
+    const osmLayer = L.tileLayer(
+      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution: "© OpenStreetMap contributors",
+      }
+    );
+
+    const satelliteLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {
+        maxZoom: 19,
+        attribution: "© Esri",
+      }
+    );
+
+    const topoLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+      {
+        maxZoom: 19,
+        attribution: "© Esri",
+      }
+    );
+
+    osmLayer.addTo(map);
+
+    const baseLayers = {
+      "🗺️ Mapa Estándar": osmLayer,
+      "🛰️ Vista Satelital": satelliteLayer,
+      "🏔️ Topográfico": topoLayer,
+    };
+
+    L.control.layers(baseLayers).addTo(map);
+
+    // Variables globales
+    let stationsData = [];
+    let markers = [];
+    let selectedStation = null;
+    let routePolylines = [];
+    let routeMarkers = [];
+    let coveragePolygon = null;
+    let flowAnimationInterval = null;
+
+    // Puntos del recorrido La Mica - Quito Sur
+    const routePoints = {
+      embalse: {
+        name: "Embalse La Mica",
+        lat: -0.3167,
+        lng: -78.2833,
+        description: "Fuente de abastecimiento principal del sistema La Mica - Quito Sur",
+        type: "source",
+        elevation: 2850,
+        capacity: "24 millones m³"
+      },
+      carmen: {
+        name: "Central Hidroeléctrica El Carmen",
+        lat: -0.2833,
+        lng: -78.3167,
+        description: "Planta generadora de energía eléctrica y punto intermedio",
+        type: "plant",
+        elevation: 2650,
+        capacity: "8.5 MW"
+      },
+      troje: {
+        name: "Planta de Tratamiento El Troje",
+        lat: -0.2167,
+        lng: -78.5167,
+        description: "Planta de tratamiento final antes de distribución",
+        type: "treatment",
+        elevation: 2580,
+        capacity: "1.2 m³/s"
+      }
+    };
+
+    // Rutas de conducción
+    const conductionRoutes = {
+      superior: [
+        [-0.3167, -78.2833], // La Mica
+        [-0.3120, -78.2890],
+        [-0.3080, -78.2950],
+        [-0.3040, -78.3010],
+        [-0.3000, -78.3070],
+        [-0.2960, -78.3120],
+        [-0.2920, -78.3140],
+        [-0.2880, -78.3155],
+        [-0.2833, -78.3167]  // El Carmen
+      ],
+      inferior: [
+        [-0.2833, -78.3167], // El Carmen
+        [-0.2800, -78.3300],
+        [-0.2750, -78.3500],
+        [-0.2700, -78.3700],
+        [-0.2650, -78.3900],
+        [-0.2600, -78.4100],
+        [-0.2550, -78.4300],
+        [-0.2500, -78.4500],
+        [-0.2450, -78.4650],
+        [-0.2400, -78.4800],
+        [-0.2350, -78.4900],
+        [-0.2300, -78.5000],
+        [-0.2250, -78.5080],
+        [-0.2200, -78.5120],
+        [-0.2167, -78.5167]  // El Troje
+      ]
+    };
+
+    // Área de cobertura del sistema
+    const coverageArea = [
+      [-0.1800, -78.5500], // Av. Morán Valverde (norte)
+      [-0.1900, -78.5200],
+      [-0.2000, -78.5100],
+      [-0.2200, -78.5000],
+      [-0.2400, -78.4900],
+      [-0.2600, -78.4800],
+      [-0.2800, -78.4700],
+      [-0.3200, -78.4600], // Límite cantonal sur
+      [-0.3400, -78.4800],
+      [-0.3300, -78.5200],
+      [-0.3100, -78.5400],
+      [-0.2800, -78.5600],
+      [-0.2400, -78.5700],
+      [-0.2000, -78.5600],
+      [-0.1800, -78.5500]  // Cierre del polígono
+    ];
+
+    // Datos simulados de estaciones
+    const simulatedStations = [
+      {
+        id: "LM001",
+        name: "Estación Embalse La Mica",
+        sistema: "Mica Quito Sur",
+        subcuenca: "La Mica",
+        lat: -0.3167,
+        lng: -78.2833,
+        variables: ["Nivel", "Caudal", "Calidad"],
+        status: "active",
+        lastReading: "2025-07-01 14:30:00",
+        readings: {
+          nivel: 2850.5,
+          caudal: 8.5,
+          calidad: 7.8,
+        },
+      },
+      {
+        id: "LM002",
+        name: "Estación El Carmen",
+        sistema: "Mica Quito Sur",
+        subcuenca: "El Carmen",
+        lat: -0.2833,
+        lng: -78.3167,
+        variables: ["Caudal", "Nivel", "Temperatura"],
+        status: "active",
+        lastReading: "2025-07-01 14:25:00",
+        readings: {
+          caudal: 8.2,
+          nivel: 2650.0,
+          temperatura: 14.5,
+        },
+      },
+      {
+        id: "LM003",
+        name: "Estación El Troje",
+        sistema: "Mica Quito Sur",
+        subcuenca: "El Troje",
+        lat: -0.2167,
+        lng: -78.5167,
+        variables: ["Caudal", "Calidad", "Temperatura"],
+        status: "active",
+        lastReading: "2025-07-01 14:20:00",
+        readings: {
+          caudal: 7.8,
+          calidad: 8.2,
+          temperatura: 16.2,
+        },
+      },
+      {
+        id: "LM004",
+        name: "Estación Conducción Superior",
+        sistema: "Mica Quito Sur",
+        subcuenca: "Conducción Superior",
+        lat: -0.3000,
+        lng: -78.3000,
+        variables: ["Caudal", "Presión"],
+        status: "active",
+        lastReading: "2025-07-01 14:15:00",
+        readings: {
+          caudal: 8.3,
+          presion: 2.4,
+        },
+      },
+      {
+        id: "LM005",
+        name: "Estación Conducción Inferior",
+        sistema: "Mica Quito Sur",
+        subcuenca: "Conducción Inferior",
+        lat: -0.2400,
+        lng: -78.4500,
+        variables: ["Caudal", "Presión"],
+        status: "active",
+        lastReading: "2025-07-01 14:10:00",
+        readings: {
+          caudal: 7.9,
+          presion: 1.8,
+        },
+      }
+    ];
+
+    // Función para crear iconos según el tipo de estación
+    function createStationIcon(station) {
+      let color = "#48bb78";
+      if (station.status === "inactive") color = "#f56565";
+      if (station.status === "maintenance") color = "#ed8936";
+
+      const isLaMica = station.sistema === "Mica Quito Sur";
+      const size = isLaMica ? 20 : 16;
+      const borderWidth = isLaMica ? 4 : 3;
+
+      return L.divIcon({
+        className: "custom-div-icon",
+        html: `<div style="
+                    background-color: ${color};
+                    width: ${size}px;
+                    height: ${size}px;
+                    border-radius: 50%;
+                    border: ${borderWidth}px solid white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    position: relative;
+                    ${isLaMica ? 'box-shadow: 0 0 15px rgba(56, 178, 172, 0.6);' : ''}
+                ">
+                    <div style="
+                        position: absolute;
+                        top: -${size / 2}px;
+                        left: -${size / 2}px;
+                        width: ${size * 2}px;
+                        height: ${size * 2}px;
+                        border-radius: 50%;
+                        background-color: ${color};
+                        opacity: 0.3;
+                        animation: pulse 2s infinite;
+                    "></div>
+                </div>`,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2]
+      });
+    }
+
+    // Función para crear popup personalizado
+    function createStationPopup(station) {
+      const readings = Object.entries(station.readings || {})
+        .map(([key, value]) => {
+          const units = {
+            precipitacion: "mm",
+            temperatura: "°C",
+            caudal: "m³/s",
+            nivel: "m",
+            calidad: "pH",
+            presion: "bar"
+          };
+          return `
+              <div class="info-item">
+                <span class="label">${key}:</span>
+                <span class="value">${value} ${units[key] || ""}</span>
+              </div>
+            `;
+        })
+        .join("");
+
+      return `
+          <div class="custom-popup">
+            <h3>${station.name}</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">ID:</span>
+                <span class="value">${station.id}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Sistema:</span>
+                <span class="value">${station.sistema}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Estado:</span>
+                <span class="value status-${station.status}">${station.status === "active" ? "Activo" :
+          station.status === "inactive" ? "Inactivo" : "Mantenimiento"
+        }</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Variables:</span>
+                <span class="value">${station.variables.join(", ")}</span>
+              </div>
+            </div>
+                        ${readings}
+            <div class="coordinates">
+              ${station.lat.toFixed(4)}, ${station.lng.toFixed(4)}
+            </div>
+          </div>
+        `;
+    }
+    // Función para animar el flujo de agua
+    function animateWaterFlow() {
+      // Limpiar animaciones previas
+      if (flowAnimationInterval) {
+        clearInterval(flowAnimationInterval);
+      }
+
+      // Limpiar rutas previas
+      routePolylines.forEach(polyline => map.removeLayer(polyline));
+      routeMarkers.forEach(marker => map.removeLayer(marker));
+      routePolylines = [];
+      routeMarkers = [];
+
+      // Crear rutas de conducción
+      const superiorRoute = L.polyline(conductionRoutes.superior, {
+        color: '#38b2ac',
+        weight: 6,
+        opacity: 0.8,
+        className: 'conduction-line'
+      }).addTo(map);
+
+      const inferiorRoute = L.polyline(conductionRoutes.inferior, {
+        color: '#4299e1',
+        weight: 6,
+        opacity: 0.8,
+        className: 'conduction-line'
+      }).addTo(map);
+
+      routePolylines.push(superiorRoute, inferiorRoute);
+
+      // Agregar puntos principales
+      Object.entries(routePoints).forEach(([key, point]) => {
+        const marker = L.marker([point.lat, point.lng], {
+          icon: L.divIcon({
+            className: 'route-point-icon',
+            html: `<div style="
+          background: linear-gradient(45deg, #2c5282, #4299e1);
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          border: 3px solid white;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          font-size: 12px;
+        ">${key === 'embalse' ? '🏔️' : key === 'carmen' ? '⚡' : '🏭'}</div>`,
+            iconSize: [25, 25],
+            iconAnchor: [12.5, 12.5]
+          })
+        }).addTo(map);
+
+        marker.bindPopup(`
+      <div class="custom-popup">
+        <h3>${point.name}</h3>
+        <p>${point.description}</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Elevación:</span>
+            <span class="value">${point.elevation} m</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Capacidad:</span>
+            <span class="value">${point.capacity}</span>
+          </div>
+        </div>
+        <div class="coordinates">
+          ${point.lat.toFixed(4)}, ${point.lng.toFixed(4)}
+        </div>
+      </div>
+    `);
+
+        routeMarkers.push(marker);
+      });
+
+      // Ajustar vista para mostrar toda la ruta
+      const allPoints = Object.values(routePoints).map(p => [p.lat, p.lng]);
+      map.fitBounds(allPoints, { padding: [20, 20] });
+    }
+
+    // Función para mostrar área de cobertura
+    function showCoverageArea() {
+      // Remover área de cobertura previa si existe
+      if (coveragePolygon) {
+        map.removeLayer(coveragePolygon);
+      }
+
+      // Crear polígono del área de cobertura
+      coveragePolygon = L.polygon(coverageArea, {
+        color: '#f6ad55',
+        fillColor: '#fed7aa',
+        fillOpacity: 0.3,
+        weight: 3,
+        opacity: 0.8,
+        dashArray: '10, 5'
+      }).addTo(map);
+
+      // Popup para el área de cobertura
+      const coveragePopup = `
+    <div class="custom-popup">
+      <h3>Área de Cobertura - Sistema La Mica</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Área directa:</span>
+          <span class="value">4,000 Ha</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Desde:</span>
+          <span class="value">Av. Morán Valverde</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Hasta:</span>
+          <span class="value">Límite cantonal sur</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Beneficiarios:</span>
+          <span class="value">Zona sur DMQ</span>
+        </div>
+      </div>
+      <p style="margin-top: 10px; font-size: 12px; color: #744210;">
+        Esta área representa la cobertura directa del sistema La Mica - Quito Sur
+      </p>
+    </div>
+  `;
+
+      coveragePolygon.bindPopup(coveragePopup);
+
+      // Ajustar vista al área de cobertura
+      map.fitBounds(coveragePolygon.getBounds(), { padding: [30, 30] });
+    }
+
+    // Función para enfocar puntos específicos de la ruta
+    function focusRoutePoint(pointKey) {
+      const point = routePoints[pointKey];
+      if (point) {
+        map.setView([point.lat, point.lng], 14);
+
+        // Remover clase active de todos los pasos
+        document.querySelectorAll('.route-step').forEach(step => {
+          step.classList.remove('active');
+        });
+
+        // Agregar clase active al paso seleccionado
+        event.target.closest('.route-step').classList.add('active');
+      }
+    }
+    // Aquí continuarían las demás funciones que ya tengas...
+  </script>
+</body>
+
+</html>

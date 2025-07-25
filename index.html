@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AntisanaH2O</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <!-- Inserta esto en el <head> -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet GPX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+
+
+
+
+    <!-- Estilos externos -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Leaflet CSS -->
+</head>
+
+<body>
+    <!-- Carrusel/Header -->
+    <header class="slider">
+        <div class="slider-container">
+            <div class="slide active" style="background-image: url(images/antisana-napo-.webp);"></div>
+            <div class="slide" style="background-image: url(images/upscalemedia-transformed.jpeg);"></div>
+            <div class="slide" style="background-image: url(images/tuberia.png);"></div>
+
+            <div class="header-content">
+                <img src="images/logo2.png" alt="AntisanaH2O Logo" class="logo">
+                <div class="menu-box">
+                    <nav>
+                        <ul>
+                            <li><a href="index.html">Inicio</a></li>
+                            <li><a href="sistema.html">Sistema</a></li>
+                            <li><a href="analisis.html">Análisis</a></li>
+                            <li><a href="reportes.html">Reportes</a></li>
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="main-layout">
+        <aside class="sidebar">
+            <ul>
+                <img src="images/contenido.png" alt="contenido logo" class="tablacontenido">
+                <h3>Tabla de contenido</h3>
+                <li><a href="#sistema">Sistema Hídrico</a></li>
+                <li><a href="#recorrido">Recorrido del Agua</a></li>
+                <li><a href="#volcan">Volcán Antisana</a></li>
+                <li><a href="#geologia">Características geológicas</a></li>
+                <li><a href="#senderismo">Senderismo en el Antisana</a></li>
+                <li><a href="#ecosistema">Vida salvaje y ecosistema</a></li>
+            </ul>
+        </aside>
+
+        <div class="contenedor-central">
+            <section class="descripcion" id="sistema">
+                <h1>Sistema Hídrico Mica - Troje</h1>
+                <div class="linea"></div>
+                <p class="descripcion-inicio">
+                    El sistema “La Mica - Quito Sur” dota de agua a la zona sur de Quito, este sistema está ubicado en
+                    las provincias de <b>Napo</b> y <b>Pichincha</b> específicamente en el Distrito Metropolitano de
+                    Quito (DMQ), donde inicia con las fuentes de abastecimiento y termina en la
+                    planta de tratamiento <b>El Troje</b> respectivamente.
+
+                </p>
+                <p class="descripcion-inicio">
+                    El sistema La Mica - Quito Sur dota de agua a la población asentada desde la Av. Morán
+                    Valverde hasta el límite cantonal sur de la ciudad. En el año 2010 el sistema abastecía a <b>393.452
+                        habitantes</b> y a partir de este dato se realiza la
+                    proyección de la población a servir hasta el año 204.
+                </p>
+
+                <img src="images/tabla1.png" alt="tabla1" class="tabla1">
+                <p >Proyección de la población servida</p>
+                <p>
+                    Los componentes que conforman el sistema La Mica - Quito Sur se los puede clasificar en tres grupos
+                    principales: captaciones o
+                    fuentes de abastecimiento, líneas de conducción y obras complementarias.
+                </p>
+                <img src="images/composicion.png" alt="composicion" class="composicion">
+                <p>
+                    La línea de <b>conducción superior</b> empieza en el embalse y las captaciones hasta <b>El
+                        Carmen</b> donde se controla el caudal del sistema, la línea de
+                    <b>conducción inferior</b> comienza en el tanque de El Carmen hasta el tanque de <b>El Troje</b> y
+                    se regula el caudal desde <b>La Moca</b>.
+                </p>
+            </section>
+            <section class="recorrido-agua" id="recorrido">
+                <h2>Recorrido del Agua Mica - Sur</h2>
+                <p>Desde la captación en el páramo hasta tu hogar, este es el viaje que realiza el agua para llegar
+                    segura y
+                    limpia
+                    a los hogares de Quito.</p>
+
+                <div id="recorridoMap" style="height: 500px; width: 100%;"></div>
+            </section>
+
+            <section class="mapa">
+                <div id="map"></div>
+            </section>
+
+
+
+            <section class="volcan" id="volcan">
+                <h2 class="Volcan">Volcán Antisana</h2>
+                <div class="linea"></div>
+
+                <div class="volcan-contenido">
+                    <!-- Imagen primero -->
+                    <aside class="aside-volcan">
+                        <img src="images/antisana.png" alt="Volcán Antisana" class="volcan-image" />
+                    </aside>
+
+                    <!-- Texto al lado derecho -->
+                    <p class="descripcion-volcan">
+                        El Volcán <b>Antisana</b> está ubicado en la provincia del Napo, dentro de la Reserva Ecológica
+                        Antisana. Se encuentra en la Cordillera de los Andes, a dos horas de Quito. Este enorme volcán
+                        tiene una altura de 5,758 metros y una base de 14 kilómetros,
+                        lo que lo convierte en el cuarto pico más alto del Ecuador. Se estima que tiene 800,000 años de
+                        antigüedad.
+                        Su actividad volcánica ha sido relativamente baja en comparación con otros volcanes
+                        ecuatorianos,
+                        pero su belleza natural y su entorno ecológico lo convierten en un lugar de gran interés para
+                        científicos y turistas.
+                    </p>
+                </div>
+            </section>
+
+
+            <section class="geologia" id="geologia">
+                <h2 class="característicasgeologicas">Características geológicas</h2>
+                <p class="descripcion-volcan">
+                    El Antisana es un estratovolcán compuesto, potencialmente activo, cubierto de glaciares. Este volcán
+                    se reconoce principalmente por sus dos picos: Antisana I, el pico antiguo y erosionado, y Antisana
+                    II, el pico joven y potencialmente activo.
+                    El clima del volcán es húmedo, con temperaturas máximas promedio de 15 °C y temperaturas muy bajas
+                    de 0°C.
+                </p>
+            </section>
+
+            <section class="senderismo" id="senderismo">
+                <h2 class="titulo">Senderismo en el Antisana</h2>
+
+                <div class="contenedor-senderismo">
+                    <!-- Texto a la izquierda -->
+                    <div class="texto-senderismo">
+                        <p class="descripcion-volcan">
+                            Si prefieres hacer senderismo, dentro de la <b>Reserva Ecológica Antisana</b>, hay una vasta
+                            extensión de páramo, con 120,000 hectáreas perfectas para diversas actividades al aire libre
+                            en compañía de la naturaleza. En este parque, se permite el senderismo, y la ruta más famosa
+                            es El Cóndor, una caminata de varios días de caminata, donde podrás apreciar un paisaje
+                            espectacular, y con un poco de suerte, verás el gigantesco ave de los Andes, el Cóndor, de
+                            ahí el nombre de esta ruta. También se permite acampar, la pesca deportiva y uso de
+                            bicicleta.
+                        <p class="descripcion-volcan"> Exiten dos atracciones principales dentro de este lugar: el
+                            <b>Páramo de las Almohadillas</b>, que
+                            recibe este nombre porque sus plantas están tan apretadas que forman una especie de
+                            almohadilla, y la Laguna La Mica, que es de origen glaciar y se encuentra al pie del Volcán
+                            Antisana. Hoy en día, es la represa de la Empresa Pública Metropolitana de Agua Potable y
+                            Saneamiento de Quito, ya que abastece de agua a una cuarta parte de la población de Quito.
+                        </p>
+                        </p>
+                        <section class="galeria">
+                            <div class="columna">
+                                <img src="images/Anti.jpg" alt="antisana ruta" class="ruta-antisana">
+                            </div>
+                            <div class="columna">
+                                <img src="images/rutaantisana.jpg" alt="antisana ruta" class="ruta-antisana">
+                            </div>
+                            <div class="columna">
+                                <img src="images/antisana1.jpg" alt="antisana ruta" class="ruta-antisana">
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="ecosistema" id="ecosistema">
+                <h2>Vida salvaje y ecosistema</h2>
+                <div class="linea"></div>
+
+                <section class="carrusel-fauna">
+                    <div class="carrusel-contenedor">
+                        <div class="fauna-slide active">
+                            <img src="images/venado.jpeg" alt="Fauna 1">
+                            <p>Venado de cola blanca</p>
+                        </div>
+                        <div class="fauna-slide">
+                            <img src="images/osos.jpg" alt="Fauna 2">
+                            <p>Oso de anteojos</p>
+                        </div>
+                        <div class="fauna-slide">
+                            <img src="images/condor.jpeg" alt="Fauna 3">
+                            <p>Condor Andino</p>
+                        </div>
+                        <div class="fauna-slide">
+                            <img src="images/pajaro.jpeg" alt="Fauna 4">
+                            <p>Llama</p>
+                        </div>
+                        <div class="fauna-slide">
+                            <img src="images/zorrito.webp" alt="Fauna 5">
+                            <p>Flora del Antisana</p>
+                        </div>
+                        <!-- Agrega más slides aquí -->
+                    </div>
+
+                    <button class="fauna-prev">&#10094;</button>
+                    <button class="fauna-next">&#10095;</button>
+                </section>
+                <p class="descripcion-inicio">
+                    El ecosistema del Antisana es rico en biodiversidad, albergando una variedad de especies de flora y
+                    fauna.
+                    Entre ellas se encuentran el cóndor andino, el venado cola blanca y diversas especies de plantas
+                    endémicas.
+                    Este ecosistema es crucial para la conservación de la biodiversidad en la región.
+                </p>
+            </section>
+        </div>
+        <div class="contenido-derecho">
+
+        </div>
+
+
+    </main>
+
+    <footer>
+        <p>Grupo 5</p>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,866 @@
+<head>
+    <meta charset="UTF-8">
+    <title>AntisanaH2O</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <!-- Inserta esto en el <head> -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet GPX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+
+
+
+
+    <!-- Estilos externos -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Leaflet CSS -->
+</head>
+
+<body>
+    <!-- Carrusel/Header -->
+    <header class="slider">
+        <div class="slider-container">
+            <div class="slide active" style="background-image: url(images/antisana-napo-.webp);"></div>
+            <div class="slide" style="background-image: url(images/upscalemedia-transformed.jpeg);"></div>
+            <div class="slide" style="background-image: url(images/tuberia.png);"></div>
+
+            <div class="header-content">
+                <img src="images/logo2.png" alt="AntisanaH2O Logo" class="logo">
+                <div class="menu-box">
+                    <nav>
+                        <ul>
+                            <li><a href="index.html">Inicio</a></li>
+                            <li><a href="sistema.html">Sistema</a></li>
+                            <li><a href="analisis.html">Análisis</a></li>
+                            <li><a href="reportes.html">Reportes</a></li>
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+    </header>
+
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+        }
+
+        .header {
+            background-image: url('fondo_antisana.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 180px;
+        }
+
+        .indice {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .indice button {
+            padding: 8px 15px;
+            border: none;
+            background-color: #a7cce9;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .indice button:hover {
+            background-color: #c9defd;
+        }
+
+        .contenido {
+            display: flex;
+            height: calc(100vh - 240px);
+        }
+
+        .info-panel {
+            width: 30%;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-panel img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .info-panel h3 {
+            margin-top: 0;
+        }
+
+        #map {
+            width: 70%;
+            height: 100%;
+        }
+
+        .detalle-cuadro {
+            background-color: #e0f3c0ef;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #0078a8;
+            font-style: monsterat, sans-serif;
+            font-size: 18px;
+            color: #0f0f0f;
+            border-radius: 5px;
+        }
+
+        .extra-cuadro {
+            background-color: #eef6fa;
+            padding: 12px;
+            margin-top: 10px;
+            border-left: 4px solid #4a90e2;
+            font-size: 18px;
+            color: #333;
+            border-radius: 5px;
+        }
+
+        .galeria {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+            justify-content: flex-start;
+        }
+
+        .galeria img {
+            width: 90px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .galeria img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px #0002;
+        }
+
+        /* Modal para imagen e info */
+        #modal-foto {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+        }
+
+        #modal-foto .modal-content {
+            background: #fff;
+            border-radius: 10px;
+            max-width: 430px;
+            padding: 22px;
+            text-align: center;
+            position: relative;
+        }
+
+        #modal-foto img {
+            width: 90%;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        #modal-foto .cerrar-modal {
+            position: absolute;
+            right: 16px;
+            top: 10px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .deslave-cuadro-extra {
+            background-color: #ffe5b2;
+            padding: 12px;
+            margin-top: 10px;
+            border-left: 4px solid #e67e22;
+            font-size: 17px;
+            color: #333;
+            border-radius: 5px;
+            display: none;
+            /* Oculto por defecto */
+        }
+
+        .mica-clima-cuadro {
+            background-color: #fff;
+            padding: 16px 18px;
+            margin-top: 12px;
+            border-left: 4px solid #2792d6;
+            font-size: 17px;
+            color: #234;
+            border-radius: 7px;
+            box-shadow: 0 1px 8px #0001;
+            display: none;
+            /* Oculto por defecto, se muestra solo para micacocha */
+        }
+
+        .carmen-descripcion-cuadro {
+            background-color: #f5f5f5;
+            padding: 15px 18px;
+            margin-top: 12px;
+            border-left: 4px solid #2b8a3e;
+            font-size: 17px;
+            color: #234;
+            border-radius: 7px;
+            box-shadow: 0 1px 8px #0001;
+            display: none;
+            /* Solo se muestra para El Carmen */
+        }
+
+        #modal-foto .modal-content {
+            background: #fff;
+            border-radius: 10px;
+            max-width: 1500px;
+            /* <--- más grande */
+            width: 100vw;
+            /* Opcional: responsive en pantallas pequeñas */
+            padding: 22px;
+            text-align: center;
+            position: relative;
+        }
+
+        #modal-foto img {
+            width: 100%;
+            /* <--- ocupa todo el ancho posible */
+            max-height: 70vh;
+            /* <--- para que no se salga de la pantalla */
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+            object-fit: contain;
+        }
+    </style>
+    </head>
+
+    <body>
+
+        <!-- Índice horizontal -->
+        <div class="indice">
+            <button onclick="mostrarLugar('micacocha')">Laguna Micacocha</button>
+            <button onclick="mostrarLugar('deslave')">Deslave Mica</button>
+            <button onclick="mostrarLugar('elcarmen')">El Carmen</button>
+            <button onclick="mostrarLugar('eltroje')">El Troje</button>
+        </div>
+
+        <!-- Contenido dividido -->
+        <div class="contenido">
+            <!-- Panel lateral -->
+            <div class="info-panel" id="info-panel">
+                <img src="images/tuberia.png" id="lugar-img" />
+                <h3 id="lugar-titulo">Conoce el Recorrido Mica-Sur</h3>
+                <p id="lugar-descripcion">
+                    Desde la laguna Mica, el agua inicia un viaje silencioso y sagrado. Desciende por túneles y canales
+                    que cruzan montañas y valles, acariciando piedras y raíces en su camino. Pasa por estaciones
+                    reguladoras, plantas de tratamiento y redes invisibles bajo la ciudad. Es un recorrido de amor y
+                    paciencia, hasta llegar a tu hogar, clara y serena, para calmar tu sed, lavar tus días y recordarte
+                    que la naturaleza siempre cuida en silencio.
+                </p>
+                <p id="info-detail" class="detalle-cuadro"></p>
+                <div id="info-extra" class="extra-cuadro"></div>
+                <div id="galeria" class="galeria"></div>
+                <div id="deslave-cuadro-extra" class="deslave-cuadro-extra"></div>
+                <div id="mica-clima-cuadro" class="mica-clima-cuadro"></div>
+                <div id="carmen-imagen-grande" style="margin-top:16px;"></div>
+                <div id="carmen-descripcion-cuadro" class="carmen-descripcion-cuadro"></div>
+                <div id="carmen-imagen-inferior" style="margin-top:16px;"></div>
+                <div id="carmen-descripcion-inferior-cuadro" class="carmen-descripcion-cuadro"></div>
+
+            </div>
+
+
+            <!-- Mapa -->
+            <div id="map"></div>
+        </div>
+
+        <script>
+            const lugares = {
+                micacocha: {
+                    coords: [-0.54331, -78.21013],
+                    titulo: 'Laguna Micacocha',
+                    descripcion: 'Reserva de agua natural ubicada en el sistema Antisana, origen del recorrido.',
+                    imagen: 'images/lagunamica1.jpg',
+                    detalle: [
+                        'Laguna de origen glaciar, actualmente represada por la Empresa Municipal de Agua Potable de Quito.',
+                        'Las gaviotas, ligles, bandurrias y aves migratorias como playeros de picos rectos y chorlos de patas largas vuelan y anidan en sus alrededores.',
+                        'El agua de La Mica es cristalina y muy fría.',
+                        'Vierte más de 2000 litros de agua por segundo, surtiendo a la mitad de la ciudad de Quito.'
+                    ],
+                    infoExtra: `
+                        <strong>Tipo:</strong> 💧 Lago<br>
+                        <strong>Categoría:</strong> 🏞️ Cuerpo de agua<br>
+                        <strong>Ubicación:</strong> 🇪🇨 Napo, Ecuador, Sudamérica<br>                      
+                    `,
+                    imagen: 'images/lagunamica1.jpg',
+                    climaCuadro: `
+                        <strong>Clima de alta montaña en La Mica</strong><br>
+                        El embalse “La Mica” y parte de la conducción superior, debido a su elevación, se encuentra dentro del clima ecuatorial frío de alta montaña.
+                        <ul>
+                            <li>Ubicada por encima de los 3000 msnm, lo que influye en temperatura y precipitación.</li>
+                            <li>Temperatura media anual: 4 a 8°C.</li>
+                            <li>Precipitación anual: 800 a 2000 mm.</li>
+                            <li>Humedad relativa superior al 80%.</li>
+                            <li>El páramo permanece frecuentemente saturado de agua.</li>
+                        </ul>
+                        <strong>¿Por qué es importante?</strong> Estas condiciones permiten el almacenamiento y regulación natural del agua, garantizando el abastecimiento constante a la ciudad de Quito.
+                    `,
+
+
+                },
+
+
+                deslave: {
+                    coords: [-0.501910, -78.303665],
+                    titulo: 'Deslave Mica',
+                    descripcion: 'Zona de deslizamiento identificada como crítica en el sistema.',
+                    imagen: 'images/deslave.jpg',
+                    detalle: [
+                        'El 9 de julio de 2025, un deslave masivo en el páramo del Antisana, cerca de la Laguna Mica, provocó el colapso de 350 metros de la tubería de acero del sistema Mica–Quito Sur que abastece al sur de Quito',
+                        `<strong>🚨La emergencia fue considerada la más grave en la historia del suministro de agua en la ciudad.🚨</strong>`
+                    ],
+                    infoExtra: `
+                        <strong>Tipo:</strong> 💧 Deslizamiento<br>
+                        <strong>Categoría:</strong> 🏞️ Masivo<br>
+                        <strong>Fecha:</strong> 9 de julio de 2025<br>
+                        <strong>Ubicación:</strong> 🇪🇨 Napo, Ecuador, Sudamérica<br>                      
+                    `,
+                    cuadroExtra: `
+                        <strong>Impacto y condiciones de trabajo: </strong>
+                        Más de 100 trabajadores operaron en condiciones extremas, con temperaturas nocturnas de hasta –4 °C, para remover cerca de 180.000 m³ de lodo y escombros del sitio, para luego preparar la instalación de la nueva tubería.
+                        <strong>Acciones inmediatas:</strong>
+                        <ul>
+                            <li>Evaluación y estabilización del terreno</li>
+                            <li>Se instaló una tubería de acero nueva de 42 pulgadas, con pruebas ultravioleta (rayos X) antes de reactivar el sistema. La puesta en marcha estaba prevista entre el 16 y 17 de julio, con el objetivo de restablecer el servicio para el 19 o 20 de julio de 2025</li>
+                            <li>Monitoreo de estabilidad</li>
+                        </ul>
+                        <strong>Nota:</strong> Se reportaron casos de problemas gastrointestinales, vinculados a ciudadanos que recurrieron a fuentes naturales de agua no potable durante la escasez
+                        `,
+                },
+
+
+                elcarmen: {
+                    coords: [-0.45506028381357094, -78.36516826766962],
+                    titulo: 'Estación El Carmen',
+                    descripcion: 'Estación intermedia de monitoreo y distribución del agua.',
+                    imagen: 'images/elcarmen.jpg',
+                    detalle: [
+                        'Estación de control intermedia del sistema Mica–Troje, ubicada en el sector El Carmen, en el cantón Rumiñahui.',
+                        'Desde esta estación se puede detener temporalmente el flujo o desviar el paso del agua para realizar inspecciones o reparaciones en sectores críticos.',
+                        'Permite monitorear y controlar el flujo de agua desde la laguna Mica hasta la planta de potabilización El Troje.',
+                        'Permite a los equipos de EPMAPS controlar caudales, presiones, válvulas y condiciones físicas del sistema en tiempo real.',
+                    ],
+
+                    infoExtra: `
+                        <strong>Función:</strong> Cámara de quiebre de presión que regula el flujo de agua por gravedad.<br>
+                        <strong>Objetivo:</strong> <br>Evita daños por presión excesiva en la tubería principal de conducción.<br>
+                        <strong>Importancia:</strong>Garantiza que el agua llegue con presión estable y segura a la planta El Troje.<br>
+                        <strong> Entorno:</strong> Rodeada de vegetación andina con posible avistamiento de curiquingues y zorros andinos.<br>
+                                          
+                    `,
+                    imagenGrande: {
+                        src: "images/sistema1.png", // Pon aquí tu imagen
+                        info: "Vista panorámica de la Estación El Carmen, nodo clave en la red de distribución."
+                    },
+                    cuadroDescripcion: `
+                            <strong>💧 Sistema Hidráulico Superior – Descripción general</strong><br>
+                            El sistema hidráulico superior del proyecto comienza en la presa de captación en la laguna La Mica y se extiende a lo largo de <b>20,744.88 metros</b>. Su función principal es transportar agua hacia una turbina de la central hidroeléctrica El Carmen, combinando presas, túneles y tuberías de presión.
+                            <br><br>
+                            <strong>📌 Componentes principales del sistema</strong><br>
+                            <b>Embalse:</b><br>
+                            Presa que cierra el desagüe natural de la laguna La Mica, formando el embalse de captación.<br><br>
+                            <b>Tubería de presión inicial:</b>
+                            <ul>
+                                <li>Longitud: 17,465.24 m</li>
+                                <li>Tipo: Acero</li>
+                                <li>Trayecto: Desde la presa hasta la chimenea de equilibrio</li>
+                                <li>Incluye: 3 túneles atravesados</li>
+                            </ul>
+                            <b>Tubería entre chimenea y casa de máquinas:</b>
+                            <ul>
+                                <li>Longitud: 3,279.64 m</li>
+                                <li>Tipo: Acero a presión</li>
+                                <li>Función: Conduce el agua a una turbina de la central hidroeléctrica El Carmen</li>
+                            </ul>
+                            <strong>🌊 Captaciones complementarias</strong><br>
+                            El sistema también se alimenta de tres captaciones adicionales, que conducen agua desde ríos cercanos hacia la tubería principal:<br>
+                            <b>Río Antisana</b>
+                            <ul>
+                                <li>Ramal: 500 m de longitud</li>
+                                <li>Diámetro: 900 mm</li>
+                                <li>Caudal: 1500 litros por segundo</li>
+                            </ul>
+                            <b>Río Jatunhuayco</b>
+                            <ul>
+                                <li>Ramal: 1,200 m de longitud</li>
+                                <li>Diámetro: 600 mm</li>
+                                <li>Caudal: 400 litros por segundo</li>
+                            </ul>
+                            <b>Río Diguchi</b>
+                            <ul>
+                                <li>Ramal: 3,000 m de longitud</li>
+                                <li>Diámetro: 400 mm</li>
+                                <li>Caudal: 150 litros por segundo</li>
+                            </ul>
+                        `,
+                    imagenInferior: {
+                        src: "images/sistema2.jpeg", // Cambia por la ruta de tu imagen
+                        info: "Esquema de la Conducción Inferior: tramo que lleva el agua desde El Carmen hacia El Troje."
+                    },
+                    cuadroInferior: `
+                        <strong>🚰 Línea de Conducción Inferior </strong><br>
+                        La línea de conducción inferior constituye la etapa final del sistema hidráulico y actúa como un sifón invertido, soportando presiones extremas de hasta <b>800 metros de columna de agua (mca)</b> en su punto más bajo. Es una tubería continua de acero que inicia en un tanque de carga ubicado aguas abajo de la descarga de la central hidroeléctrica. Esta línea atraviesa varios ríos y quebradas profundas hasta llegar a la planta de tratamiento El Troje, donde el agua es potabilizada y distribuida al sector sur del Distrito Metropolitano de Quito (DMQ).
+                        <br><br>
+                        <strong>🧩 Componentes principales</strong>
+                        <ul>
+                            <li>Tuberías de conducción de acero</li>
+                            <li>Válvulas distribuidas a lo largo del trayecto</li>
+                            <li>Tanque de carga ubicado después de la central hidroeléctrica</li>
+                            <li>Estación reductora de presión y reguladora de caudal “La Moca”</li>
+                        </ul>
+                        <strong>⚙️ Control y sincronización</strong><br>
+                        El funcionamiento de esta línea está sincronizado con la central hidroeléctrica El Carmen. Para lograrlo, se incorpora:
+                        <ul>
+                            <li>Válvula automática de regulación de presión y caudal</li>
+                            <li><b>Ubicación:</b> Estación “La Moca”</li>
+                            <li><b>Función:</b> Controlar el flujo y presión del agua de forma automática</li>
+                            <li><b>Modo de operación:</b> Telecomandada desde la central hidroeléctrica El Carmen</li>
+                        </ul>
+                    `
+
+                },
+
+                lamoca: {
+                    coords: [-0.39996748157775586, -78.39087616032049],
+                    titulo: 'Estación La Moca',
+                    descripcion: 'Estación reductora de presión y reguladora de caudal.',
+                    imagen: 'images/lamoca.jpg',
+                    detalle: [
+                        'Ubicada en la línea de conducción inferior, regula el flujo de agua hacia la planta El Troje.',
+                        'Permite controlar la presión y caudal del agua transportada desde El Carmen.',
+                        'Es un punto clave para garantizar un suministro estable y seguro a la planta de potabilización.'
+                    ],
+                    infoExtra: `
+                        <strong>Tipo:</strong> 💧 Estación reguladora<br>
+                        <strong>Categoría:</strong> 🏞️ Infraestructura hidráulica<br>
+                        <strong>Ubicación:</strong> 🇪🇨 Napo, Ecuador, Sudamérica<br>                      
+                    `,
+                },
+
+
+                eltroje: {
+                    coords: [-0.33366067710572767, -78.52259825531064],
+                    titulo: 'Planta El Troje',
+                    descripcion: 'Planta de potabilización que distribuye el agua a barrios del sur de Quito.',
+                    imagen: 'images/eltroje.jpg',
+                    detalle: 'El Troje es la planta principal de tratamiento y potabilización de agua que abastece al sur de Quito. Transforma el agua cruda de la laguna La Mica en agua segura para consumo humano.',
+                    infoExtra: `
+                        <div style="text-align:center;">
+                            <h2 style="margin-bottom:6px;"> Planta de Tratamiento El Troje</h2>
+                            <p style="font-size:1.15em; color:#226;">
+                                El Troje es la principal planta de potabilización de agua del sur de Quito, operada por EPMAPS.<br>
+                                <b>Garantiza agua segura a más de 400,000 habitantes</b> de parroquias como Guamaní, La Argelia, Quitumbe, Turubamba y Chillogallo.
+                            </p>
+                        </div>
+                        <div style="margin:18px 0;">
+                            <strong>📍 Ubicación:</strong> Parroquia Guamaní, sur de Quito.<br>
+                            <strong>💧 Cobertura:</strong> Sectores urbanos y rurales del sur de la ciudad.
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <strong>🏗️ Capacidad y Volumen:</strong>
+                            <ul>
+                                <li>Trata millones de litros de agua al día.</li>
+                                <li>Recibe agua cruda desde la laguna La Mica y captaciones complementarias.</li>
+                            </ul>
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <strong>🔬 Procesos de Potabilización:</strong>
+                            <ul>
+                                <li><b>Captación</b> de agua superficial.</li>
+                                <li><b>Coagulación y floculación</b> para remover partículas.</li>
+                                <li><b>Sedimentación</b> y <b>filtración</b> con arena y carbón activado.</li>
+                                <li><b>Desinfección</b> para eliminar microorganismos.</li>
+                            </ul>
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <strong>⚙️ Tecnología y Monitoreo:</strong>
+                            <ul>
+                                <li>Equipos automatizados para pH, turbidez, cloro y caudal.</li>
+                                <li>Telemetría en tiempo real para control y supervisión.</li>
+                            </ul>
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <strong>🌱 Impacto Social y Ambiental:</strong>
+                            <ul>
+                                <li>Previene enfermedades relacionadas con agua no tratada.</li>
+                                <li>Fomenta el desarrollo urbano sostenible y el uso de fuentes superficiales.</li>
+                            </ul>
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <strong>🚧 Desafíos y Mantenimiento:</strong>
+                            <ul>
+                                <li>Mantenimiento constante para asegurar la calidad y continuidad.</li>
+                                <li>Planes de contingencia ante emergencias (como deslaves o cortes de suministro).</li>
+                            </ul>
+                        </div>                     
+                    `,
+                }
+            };
+
+            // Base layers
+            const baseOpenTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenTopoMap'
+            });
+
+            const baseOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            });
+
+            const baseEsri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+                'World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles © Esri'
+            });
+
+            const map = L.map('map', {
+                center: [-0.354, -78.197],
+                zoom: 11,
+                layers: [baseOpenTopo]
+            });
+
+            // Capas de marcadores
+            const grupoMicacocha = L.layerGroup().addTo(map);
+            const grupoDeslave = L.layerGroup().addTo(map);
+            const grupoElCarmen = L.layerGroup().addTo(map);
+            const grupoElTroje = L.layerGroup().addTo(map);
+
+            const marcadores = {
+                micacocha: L.marker(lugares.micacocha.coords).addTo(grupoMicacocha)
+                    .bindPopup(`<strong>${lugares.micacocha.titulo}</strong><br>${lugares.micacocha.descripcion}`),
+                deslave: L.marker(lugares.deslave.coords).addTo(grupoDeslave)
+                    .bindPopup(`<strong>${lugares.deslave.titulo}</strong><br>${lugares.deslave.descripcion}`),
+                elcarmen: L.marker(lugares.elcarmen.coords).addTo(grupoElCarmen)
+                    .bindPopup(`<strong>${lugares.elcarmen.titulo}</strong><br>${lugares.elcarmen.descripcion}`),
+                lamoca: L.marker(lugares.lamoca.coords).addTo(grupoElCarmen)
+                    .bindPopup(`<strong>${lugares.lamoca.titulo}</strong><br>${lugares.lamoca.descripcion}`),
+                eltroje: L.marker(lugares.eltroje.coords).addTo(grupoElTroje)
+                    .bindPopup(`<strong>${lugares.eltroje.titulo}</strong><br>${lugares.eltroje.descripcion}`)
+            };
+
+            // Control de capas
+            const capasBase = {
+                "OpenTopoMap": baseOpenTopo,
+                "OpenStreetMap": baseOSM,
+                "Esri Satelital": baseEsri
+            };
+
+            const capasPuntos = {
+                "Laguna Micacocha": grupoMicacocha,
+                "Deslave Mica": grupoDeslave,
+                "Estación El Carmen": grupoElCarmen,
+                "Estación La Moca": grupoElCarmen,
+                "Planta El Troje": grupoElTroje
+
+            };
+
+            L.control.layers(capasBase, capasPuntos).addTo(map);
+
+            // SOLO DEJA ESTA FUNCIÓN mostrarLugar
+            function mostrarLugar(nombre) {
+                const lugar = lugares[nombre];
+                map.setView(lugar.coords, 13);
+                marcadores[nombre].openPopup();
+
+                document.getElementById('lugar-img').src = lugar.imagen;
+                document.getElementById('lugar-titulo').textContent = lugar.titulo;
+                document.getElementById('lugar-descripcion').textContent = lugar.descripcion;
+
+                if (Array.isArray(lugar.detalle)) {
+                    document.getElementById('info-detail').innerHTML = '<ul style="padding-left: 20px; margin-top: 0;">' +
+                        lugar.detalle.map(item => `<li>${item}</li>`).join('') +
+                        '</ul>';
+                } else {
+                    document.getElementById('info-detail').textContent = lugar.detalle || '';
+                }
+
+                document.getElementById('info-extra').innerHTML = lugar.infoExtra || '';
+                mostrarGaleria(nombre);
+
+                // --- CUADRO EXTRA SOLO PARA DESLAVE ---
+                if (nombre === "deslave" && lugares.deslave.cuadroExtra) {
+                    document.getElementById('deslave-cuadro-extra').innerHTML = lugares.deslave.cuadroExtra;
+                    document.getElementById('deslave-cuadro-extra').style.display = "block";
+                } else {
+                    document.getElementById('deslave-cuadro-extra').style.display = "none";
+                    document.getElementById('deslave-cuadro-extra').innerHTML = "";
+                }
+                if (nombre === "micacocha" && lugares.micacocha.climaCuadro) {
+                    document.getElementById('mica-clima-cuadro').innerHTML = lugares.micacocha.climaCuadro;
+                    document.getElementById('mica-clima-cuadro').style.display = "block";
+                } else {
+                    document.getElementById('mica-clima-cuadro').style.display = "none";
+                    document.getElementById('mica-clima-cuadro').innerHTML = "";
+                }
+                // Mostrar imagen grande solo para El Carmen
+                if (nombre === "elcarmen" && lugar.imagenGrande) {
+                    document.getElementById('carmen-imagen-grande').innerHTML = `
+        <img src="${lugar.imagenGrande.src}" alt="Estación El Carmen" 
+             style="width:100%;max-width:330px;border-radius:7px;cursor:pointer;box-shadow:0 2px 10px #0003;"
+             onclick="abrirModalFoto({src: '${lugar.imagenGrande.src}', info: '${lugar.imagenGrande.info.replace(/'/g, "\\'")}' })"
+        >
+        <div style="font-size:15px;color:#555;margin-top:3px;text-align:center;">
+            ${lugar.imagenGrande.info}
+        </div>`;
+                } else {
+                    document.getElementById('carmen-imagen-grande').innerHTML = "";
+                }
+
+                // Mostrar cuadro descriptivo solo para El Carmen
+                if (nombre === "elcarmen" && lugar.cuadroDescripcion) {
+                    document.getElementById('carmen-descripcion-cuadro').innerHTML = lugar.cuadroDescripcion;
+                    document.getElementById('carmen-descripcion-cuadro').style.display = "block";
+                } else {
+                    document.getElementById('carmen-descripcion-cuadro').style.display = "none";
+                    document.getElementById('carmen-descripcion-cuadro').innerHTML = "";
+                }
+
+                // Imagen inferior solo para El Carmen
+                if (nombre === "elcarmen" && lugar.imagenInferior) {
+                    document.getElementById('carmen-imagen-inferior').innerHTML = `
+        <img src="${lugar.imagenInferior.src}" alt="Conducción Inferior"
+             style="width:100%;max-width:330px;border-radius:7px;cursor:pointer;box-shadow:0 2px 10px #0003;"
+             onclick="abrirModalFoto({src: '${lugar.imagenInferior.src}', info: '${lugar.imagenInferior.info.replace(/'/g, "\\'")}' })"
+        >
+        <div style="font-size:15px;color:#555;margin-top:3px;text-align:center;">
+            ${lugar.imagenInferior.info}
+        </div>`;
+                } else {
+                    document.getElementById('carmen-imagen-inferior').innerHTML = "";
+                }
+
+                // Cuadro descriptivo para la Conducción Inferior
+                if (nombre === "elcarmen" && lugar.cuadroInferior) {
+                    document.getElementById('carmen-descripcion-inferior-cuadro').innerHTML = lugar.cuadroInferior;
+                    document.getElementById('carmen-descripcion-inferior-cuadro').style.display = "block";
+                } else {
+                    document.getElementById('carmen-descripcion-inferior-cuadro').style.display = "none";
+                    document.getElementById('carmen-descripcion-inferior-cuadro').innerHTML = "";
+                }
+            }
+
+
+
+
+
+
+            // Galerías (ejemplo para deslave)
+            const galerias = {
+                deslave: [
+                    {
+                        src: 'images/deslizamiento1.jpg',
+                        info: 'Causa: Un deslave masivo, provocado por intensas lluvias, arrastró tierra y lodo, lo que rompió un tramo importante de la tubería de conducción de agua.'
+                    },
+                    {
+                        src: 'images/deslizamiento2.jpg',
+                        info: 'Este evento tuvo un impacto significativo porque destruyó aproximadamente 350 metros de la tubería principal del sistema Mica–Quito Sur, la cual transporta agua potable desde la laguna La Mica hasta la planta de tratamiento El Troje.'
+                    },
+                    {
+                        src: 'images/fila.jpg',
+                        info: 'Se interrumpió el servicio de agua potable en al menos seis parroquias del sur de Quito, afectando a unas 350 mil personas.'
+                    },
+                    {
+                        src: 'images/operarios.jpg',
+                        info: 'Los operarios trabajaron en condiciones extremas, con temperaturas nocturnas de hasta -4 °C, para remover cerca de 180.000 m³ de lodo y escombros del sitio.'
+                    }
+
+                ],
+                micacocha: [
+                    {
+                        src: 'images/gaviota.jpg',
+                        info: 'Gaviota andina (Chroicocephalus serranus): Frecuente en la laguna, se alimenta de pequeños peces e insectos.'
+                    },
+                    {
+                        src: 'images/bandurrias.jpeg',
+                        info: 'Bandurria andina (Theristicus branickii): Esta ave de largo pico curvado y plumaje gris habita humedales altoandinos. Su dieta incluye insectos, lombrices y pequeños invertebrados que busca en el lodo.'
+                    },
+                    {
+                        src: 'images/playeros.jpg',
+                        info: 'Playeros de pico recto (Tringa spp. y Calidris spp.): Estas aves migratorias visitan La Mica durante sus largos viajes desde América del Norte. Usan los bordes fangosos de la laguna para alimentarse de larvas, crustáceos y pequeños insectos acuáticos.'
+                    },
+                    {
+                        src: 'images/osos.jpg',
+                        info: 'Oso de anteojos (Tremarctos ornatus): Es el único oso de Sudamérica y frecuenta zonas boscosas y páramos altos como los alrededores de La Mica. Se alimenta de bromelias, frutas silvestres y ocasionalmente de pequeños animales.'
+                    },
+                    {
+                        src: 'images/flora1.jpg',
+                        info: 'Gentianella rupicola: Planta nativa de páramo con flores pequeñas y resistentes al frío. Contribuye a mantener el suelo firme y reduce la erosión en zonas húmedas.'
+                    },
+                    {
+                        src: 'images/flora2.jpg',
+                        info: 'Polylepis (Yagual): Árbol andino de crecimiento lento que protege fuentes de agua en quebradas. Su hojarasca mejora la infiltración y retención hídrica en el suelo.'
+                    },
+                    {
+                        src: 'images/liquines.jpeg',
+                        info: 'Líquenes y musgos: Forman una esponja natural que captura y libera agua lentamente. Filtran sedimentos y ayudan a mantener el agua limpia en La Mica.'
+                    },
+                    {
+                        src: 'images/flora4.jpg',
+                        info: ' Chuquiraguas (Chuquiraga jussieui): Flor emblemática de los Andes, polinizada por colibríes. Su presencia indica un páramo sano y estable, vital para conservar el equilibrio del ecosistema hídrico.'
+                    }
+
+
+
+
+
+                ],
+                // Puedes agregar galerías para otros lugares si quieres
+            };
+
+            function mostrarGaleria(nombre) {
+                const galeriaDiv = document.getElementById('galeria');
+                galeriaDiv.innerHTML = '';
+
+                if (galerias[nombre]) {
+                    galerias[nombre].forEach((foto, idx) => {
+                        const img = document.createElement('img');
+                        img.src = foto.src;
+                        img.alt = `Foto ${idx + 1}`;
+                        img.onclick = () => abrirModalFoto(foto);
+                        galeriaDiv.appendChild(img);
+                    });
+                }
+            }
+
+            // Modal
+            function abrirModalFoto(foto) {
+                document.getElementById('modal-img').src = foto.src;
+                document.getElementById('modal-info').textContent = foto.info;
+                document.getElementById('modal-foto').style.display = 'flex';
+            }
+            function cerrarModalFoto() {
+                document.getElementById('modal-foto').style.display = 'none';
+            }
+
+            // 1. Define los tramos de recorrido
+            // Conducción superior: de La Mica a El Carmen (incluye Deslave)
+            const coordsSuperior = [
+                lugares.micacocha.coords,
+                lugares.deslave.coords,
+                lugares.elcarmen.coords
+            ];
+            // Conducción inferior: de El Carmen a La Moca y El Troje
+            const coordsInferior = [
+                lugares.elcarmen.coords,
+                lugares.lamoca.coords,
+                lugares.eltroje.coords
+            ];
+
+            // 2. Dibuja las líneas en el mapa con colores distintos
+            const lineaSuperior = L.polyline(coordsSuperior, {
+                color: "#00bfff", // azul claro
+                weight: 7,
+                opacity: 0.85
+            }).addTo(map);
+
+            const lineaInferior = L.polyline(coordsInferior, {
+                color: "#3dd66e", // verde agua
+                weight: 7,
+                opacity: 0.9
+            }).addTo(map);
+
+            // 3. Animación del "agua en movimiento"
+            // Puedes ajustar steps y speed para suavidad/velocidad
+            const steps = 600;
+            let progress = 0;
+
+            let animSuperior = L.circleMarker(coordsSuperior[0], {
+                radius: 11,
+                color: "#009cff",
+                fillColor: "#5edbff",
+                fillOpacity: 0.9,
+                weight: 3
+            }).addTo(map);
+
+            let animInferior = L.circleMarker(coordsInferior[0], {
+                radius: 11,
+                color: "#1ad37f",
+                fillColor: "#7affb1",
+                fillOpacity: 0.9,
+                weight: 3
+            }).addTo(map);
+
+            function animateFlow() {
+                // Superior: de 0 a 1 (La Mica a El Carmen)
+                let tSup = Math.min(progress / (steps * 0.6), 1); // 60% del tiempo para el tramo superior
+                let latlngSup = interpolateLine(coordsSuperior, tSup);
+                animSuperior.setLatLng(latlngSup);
+
+                // Inferior: de 0.6 a 1.0 (El Carmen a El Troje)
+                let tInf = Math.max((progress - steps * 0.6) / (steps * 0.4), 0);
+                let latlngInf = interpolateLine(coordsInferior, tInf);
+                animInferior.setLatLng(latlngInf);
+
+                progress = (progress + 1) % steps;
+                requestAnimationFrame(animateFlow);
+            }
+
+            // Función para interpolar sobre un tramo de línea
+            function interpolateLine(points, t) {
+                if (t <= 0) return points[0];
+                if (t >= 1) return points[points.length - 1];
+                let totalDist = 0, segDists = [];
+                for (let i = 1; i < points.length; ++i) {
+                    let d = map.distance(points[i - 1], points[i]);
+                    segDists.push(d); totalDist += d;
+                }
+                let target = t * totalDist, sum = 0;
+                for (let i = 1; i < points.length; ++i) {
+                    if (sum + segDists[i - 1] >= target) {
+                        let segT = (target - sum) / segDists[i - 1];
+                        return [
+                            points[i - 1][0] + segT * (points[i][0] - points[i - 1][0]),
+                            points[i - 1][1] + segT * (points[i][1] - points[i - 1][1])
+                        ];
+                    }
+                    sum += segDists[i - 1];
+                }
+                return points[points.length - 1];
+            }
+
+            animateFlow();
+
+        </script>
+        <div id="modal-foto">
+            <div class="modal-content">
+                <button class="cerrar-modal" onclick="cerrarModalFoto()">&times;</button>
+                <img id="modal-img" src="" alt="Foto">
+                <div id="modal-info" style="margin-top:10px;color:#222;font-size:1.1em"></div>
+            </div>
+        </div>
+    </body>
+
+    </html>
