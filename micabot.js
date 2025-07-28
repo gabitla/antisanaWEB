@@ -17,7 +17,7 @@ class MicaBot {
             
             // Opción 2: Groq (más rápido y gratis)
              provider: 'groq',
-             apiKey: '', // Tu API key de Groq
+             apiKey: 'gsk_xe9olvnUZK7ErEvZRTB8WGdyb3FYs1EiSsasErQSzzjdZTIKodfMla', // Tu API key de Groq
              model: 'llama3-8b-8192',
              endpoint: 'https://api.groq.com/openai/v1/chat/completions',
             

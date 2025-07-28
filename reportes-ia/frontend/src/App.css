@@ -1,0 +1,66 @@
+.App {
+  font-family: Arial, sans-serif;
+  padding: 32px;
+  background: #f5f7fa;
+}
+h1 {
+  color: #2166ac;
+}
+input[type="file"] {
+  margin: 16px 16px 16px 0;
+}
+button {
+  background: #3486eb;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+button:hover {
+  background: #2566b1;
+}
+.App {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  min-height: 100vh;
+  padding: 32px;
+}
+h1 {
+  color: #2166ac;
+}
+input[type="file"] {
+  margin: 16px 16px 16px 0;
+}
+button {
+  background: #3486eb;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+button:hover {
+  background: #2566b1;
+}
+label {
+  font-weight: bold;
+  margin-right: 8px;
+}
+select {
+  margin-right: 16px;
+}
+
+body {
+  background: linear-gradient(120deg, #0a2342 0%, #185a9d 100%);
+  font-family: 'Montserrat', 'Arial', sans-serif;
+}
+.App {
+  width: 100vw;
+  min-height: 100vh;
+}
+button {
+  font-family: inherit;
+}
